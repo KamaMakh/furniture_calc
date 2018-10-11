@@ -3,13 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>furniture_calc</title>
+    <link rel="stylesheet" href="src/css/styles.css">
   </head>
   <body>
     <div id="app">
-      <router-view></router-view>
     </div>
 
-    <button class="addShelf">Добавить полку</button>
+    <div class="shelves-wrap">
+      <button class="addShelf" data-group="1">Добавить полку в 1 секцию</button>
+      <button class="addShelf" data-group="2">Добавить полку в 2 секцию</button>
+    </div>
+
+    <button class="addSection" data-group="3">Добавить секцию</button>
+    <!--<button class="removeSection">Удалить секцию</button>-->
 
     <script src="/dist/build.js"></script>
   </body>
