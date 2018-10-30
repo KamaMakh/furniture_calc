@@ -1,6 +1,6 @@
 # furniture_calc
 
-> A Vue.js project
+> A convajs project
 
 ## Build Setup
 
