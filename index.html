@@ -9,12 +9,34 @@
     <div id="app">
     </div>
 
-    <div class="shelves-wrap">
-      <button class="addShelf" data-group="1">Добавить полку в 1 секцию</button>
-      <button class="addShelf" data-group="2">Добавить полку в 2 секцию</button>
+    <label for="doors">Показать двери<input id="doors" class="doors" type="checkbox" name="doors"></label>
+    <div class="console-wrap">
+      <div class="right-console-wrap">
+        <label for="rightConsole">Показать правую консоль<input id="rightConsole" class="rightConsole" type="checkbox" name="rightConsole"></label>
+        <button class="add-shelf-right-console hide">
+          Добавить полку в правую консоль
+        </button>
+      </div>
+      <div class="left-console-wrap">
+        <label for="leftConsole">Показать левую консоль<input id="leftConsole" class="leftConsole" type="checkbox" name="leftConsole"></label>
+        <button class="add-shelf-left-console hide">
+          Добавить полку в левую консоль
+        </button>
+      </div>
     </div>
 
-    <button class="addSection" data-group="3">Добавить секцию</button>
+    <div class="crossBar-wrap">
+      <button class="addCrossBar" data-group="1">Добавить штангу в 1 секцию</button>
+      <label for="addCrossBar">Добавить штангу в 1 секцию<input id="addCrossBar" data-group="1" class="addCrossBar" type="checkbox" name="addCrossBar"></label>
+    </div>
+    <div class="shelves-wrap">
+      <button class="addShelf" data-group="1">Добавить полку в 1 секцию</button>
+    </div>
+    <div class="box-wrap">
+      <button class="addBox" data-group="1">Добавить ящик в 1 секцию</button>
+    </div>
+
+    <button class="addSection" data-group="2">Добавить секцию</button>
     <!--<button class="removeSection">Удалить секцию</button>-->
 
     <script src="/dist/build.js"></script>
