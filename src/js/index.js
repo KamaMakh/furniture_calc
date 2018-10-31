@@ -464,9 +464,6 @@ let furniture = {
         });
 
         crossBarLine.on('mouseover', ()=>{
-            // let imageObj = new Image();
-            // imageObj.src = 'src/assets/logo.png';
-            // shelf.fillPatternImage(imageObj);
             crossBarLine.fill('rgba(225,225,225, 0.5)')
             this.layer.draw()
         })
@@ -476,25 +473,26 @@ let furniture = {
         })
 
 
-        crossBar.add(crossBarLine);
-        this.groups['group'+section]['crossBarGroup'].add(crossBar);
+        crossBar.add(crossBarLine)
+        this.groups['group'+section]['crossBarGroup'].add(crossBar)
         for(let key in this.stage.children[0]['children']){
             if(this.stage.children[0]['children'].hasOwnProperty(key)){
-                let child = this.stage.children[0]['children'][key];
+                let child = this.stage.children[0]['children'][key]
                 if(child.hasOwnProperty('nodeType') && child['nodeType'] == 'Group' && child.hasOwnProperty('attrs') && child.attrs.name != 'crossBar'+section){
-                    this.layer.add(this.groups['group'+section]['crossBarGroup']);
-                    this.groups['group'+section]['crossBarGroup'].setZIndex(oldZIndex <= 2? 2 : oldZIndex);
+                    this.layer.add(this.groups['group'+section]['crossBarGroup'])
+                    this.groups['group'+section]['crossBarGroup'].setZIndex(oldZIndex <= 2? 2 : oldZIndex)
                 }else{
-                    this.layer.add(this.groups['group'+section]['crossBarGroup']);
-                    this.groups['group'+section]['crossBarGroup'].setZIndex(oldZIndex <= 2? 2 : oldZIndex);
+                    this.layer.add(this.groups['group'+section]['crossBarGroup'])
+                    this.groups['group'+section]['crossBarGroup'].setZIndex(oldZIndex <= 2? 2 : oldZIndex)
                 }
             }
         }
         let currentGroup = this.groups['group'+section]
-        if(currentGroup['crossBarGroup']['index'] > currentGroup['sectionGroup']['index']){
+        if(currentGroup['crossBarGroup']['index'] > (currentGroup['sectionGroup']['index'] || this.layer.find('.rightSection')[0]['index'])){
             currentGroup['crossBarGroup'].moveDown()
         }
-        this.layer.draw();
+
+        this.layer.draw()
     },
 
     addBox(section, boxHeight = 22, handleHeight = 4, handleWidth = 30){
@@ -509,28 +507,28 @@ let furniture = {
             boxX1 = this.firstPoint.x,
             boxY1 = this.firstPoint.y + this.height - 20;
         for(let i = 1; i<this.groups.count; i++){
-            sections[i] = this.groups['group'+i]['sectionGroup']['children'][0];
-            sections['length'] = i;
+            sections[i] = this.groups['group'+i]['sectionGroup']['children'][0]
+            sections['length'] = i
         }
         if(sections.length > 0 && section > 1){
-            attrs = sections[section-1]['attrs'];
-            x1 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0);
-            x2 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0);
+            attrs = sections[section-1]['attrs']
+            x1 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0)
+            x2 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0)
             if(sections.hasOwnProperty(section)){
-                attrs = sections[section]['attrs'];
-                x3 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0);
-                x4 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0);
+                attrs = sections[section]['attrs']
+                x3 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0)
+                x4 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0)
             }else{
-                x3 = this.limitation['right']+40;
-                x4 = this.limitation['right'];
+                x3 = this.limitation['right']+40
+                x4 = this.limitation['right']
             }
         }else if (sections.length){
-            attrs = sections[section]['attrs'];
-            x3 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0);
-            x4 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0);
+            attrs = sections[section]['attrs']
+            x3 = attrs['points'][2] + (attrs['x'] ? attrs['x'] : 0)
+            x4 = attrs['points'][0] + (attrs['x'] ? attrs['x'] : 0)
         }else{
-            x3 = this.limitation.right + 40;
-            x4 = this.limitation.right;
+            x3 = this.limitation.right + 40
+            x4 = this.limitation.right
         }
 
         boxBottom = new Konva.Line({
@@ -1173,7 +1171,7 @@ let furniture = {
             }
         }
     },
-    showDoors(){
+    showDoors(count = 3){
         let doorWidth = 126,
             doorCount,
             doorRealWidth,
@@ -1181,7 +1179,7 @@ let furniture = {
             height = this.height,
             x1 = this.limitation.left,
             y1 = this.limitation.bottom;
-        doorCount = Math.floor(width/doorWidth)
+        doorCount = count
         doorRealWidth = width/doorCount
 
         for(let i=0; i<doorCount; i++){
@@ -1509,6 +1507,10 @@ let furniture = {
     },
 
     removeSection(index){
+        if(!index){
+            index = this.groups['count']
+        }
+        if (index==1) return
         for(let key in this.groups['group'+index]){
             if(this.groups['group'+index].hasOwnProperty(key)){
                 this.groups['group'+index][key].remove()
@@ -1520,15 +1522,47 @@ let furniture = {
         this.groups['count'] -= 1
         this.sectionGroupPosition(this.getSectionsCount())
         this.layer.draw()
-        watchers.watchSectionsCount(this.groups['count'])
+        //watchers.watchSectionsCount(this.groups['count'])
     },
 
     removeBox(){
 
     },
 
-    hideCrossBar(){
+    hideCrossBar(section){
+        let crossBar = this.groups['group'+section]['crossBarGroup']
+        crossBar.removeChildren()
+        this.layer.draw()
+    },
 
+    setDoorImage(val, index){
+        let doors = this.layer.find('.doors'),
+            currentDoor = doors[0]['children'][index-1]
+
+        if(val == 'mirror'){
+            let imageObj = new Image()
+            imageObj.onload = ()=>{
+                currentDoor.fillPatternImage(imageObj)
+                this.layer.draw()
+
+            }
+            imageObj.src = 'src/assets/mirror.png'
+            currentDoor.fill('')
+        }
+        else if (val == 'dsp'){
+            let imageObj = new Image()
+            imageObj.onload = ()=>{
+                currentDoor.fillPatternImage(imageObj)
+                currentDoor.fill('')
+                this.layer.draw()
+
+            }
+            imageObj.src = 'src/assets/dsp.png'
+        }
+        else{
+            currentDoor.fill('#fff')
+            this.layer.draw()
+        }
     },
 
     createLayer() {
@@ -1554,7 +1588,6 @@ let furniture = {
         this.createRightSection()
         this.createTopSection()
         this.createStage(this.layer)
-        console.log(this.groups)
     }
 };
 

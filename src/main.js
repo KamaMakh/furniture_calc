@@ -23,13 +23,13 @@ document.body.addEventListener('click', function(e){
         e.target.setAttribute('data-group', parseInt(group)+1)
         shelf_span.innerHTML = `<button class="addShelf" data-group="${parseInt(group)}">Добавить полку в ${parseInt(group)} секцию</button>`
         box_span.innerHTML = `<button class="addBox" data-group="${parseInt(group)}">Добавить ящик в ${parseInt(group)} секцию</button>`
-        crossBar_span.innerHTML = `<button class="addCrossBar" data-group="${parseInt(group)}">Добавить штангу в ${parseInt(group)} секцию</button>`
+        crossBar_span.innerHTML = `<label for="addCrossBar${parseInt(group)}">Добавить штангу в ${parseInt(group)} секцию<input id="addCrossBar${parseInt(group)}" data-group="${parseInt(group)}" class="addCrossBar" type="checkbox" name="addCrossBar"></label>`
         shelvesWrap.append(shelf_span)
         boxesWrap.append(box_span)
         crossBarWrap.append(crossBar_span)
     }
     else if (e.target.classList.contains('removeSection')){
-        //furniture.removeSection();
+        furniture.removeSection();
     }
     else if (e.target.classList.contains('addBox')){
         let group = e.target.getAttribute('data-group')
@@ -37,9 +37,7 @@ document.body.addEventListener('click', function(e){
     }
     else if (e.target.classList.contains('addCrossBar')){
         let group = e.target.getAttribute('data-group')
-        //furniture.addCrossBar(group)
         if(e.target.checked){
-            console.log(group)
             furniture.addCrossBar(group)
         }else{
             furniture.hideCrossBar(group)
@@ -47,11 +45,11 @@ document.body.addEventListener('click', function(e){
     }
     else if (e.target.classList.contains('doors')){
 
-        if(!e.target.checked){
-            furniture.hideDoors()
-        }else{
-            furniture.showDoors()
-        }
+        // if(!e.target.checked){
+        //     furniture.hideDoors()
+        // }else{
+        //     furniture.showDoors()
+        // }
     }
     else if (e.target.classList.contains('rightConsole')){
         let shelfButton = document.querySelector('.add-shelf-right-console')
@@ -81,3 +79,158 @@ document.body.addEventListener('click', function(e){
         furniture.addLeftConsoleShelf()
     }
 });
+
+let consoles = document.body.querySelector('.consoles'),
+    sectionsAmount = document.body.querySelector('.amount-wrap.sections'),
+    doorsAmount = document.body.querySelector('.amount-wrap.doors'),
+    doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
+    doorOptionColumn = document.body.querySelector('.doors-options-column.column'),
+    materials = document.body.querySelectorAll('.materials')
+
+
+
+consoles.onchange = function(obj){
+    let val = this.options[this.selectedIndex].value
+
+    if(val == 'left'){
+        furniture.showLeftSideConsole()
+        furniture.hideRightSideConsole()
+    }
+    else if (val == 'right'){
+        furniture.showRightSideConsole()
+        furniture.hideLeftSideConsole()
+    }
+    else if (val == 'all'){
+        furniture.showLeftSideConsole()
+        furniture.showRightSideConsole()
+    }
+    else{
+        furniture.hideRightSideConsole()
+        furniture.hideLeftSideConsole()
+    }
+}
+
+sectionsAmount.addEventListener('click', function(e){
+    let target = e.target,
+        input = this.querySelector('input')
+
+    if(target.classList.contains('minus')){
+        if(input.value <= 1){
+            return
+        }
+        input.value--
+        furniture.removeSection();
+    }
+    else if (target.classList.contains('plus')){
+        input.value++
+        furniture.addSection(input.value)
+    }
+})
+
+doorsAmount.addEventListener('click', function(e){
+    let target = e.target,
+        input = this.querySelector('input'),
+        isChecked = doorsCheckbox.checked,
+        list = doorOptionColumn.querySelector('.body'),
+        optionHtml,
+        materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+
+
+    if(target.classList.contains('minus')){
+        if(input.value <= 2){
+            return
+        }
+        input.value--
+        furniture.hideDoors()
+        furniture.showDoors(input.value)
+
+        list.querySelectorAll('.option-wrap').forEach(function(item, index, arr){
+            if(parseInt(item.getAttribute('data-key')) > input.value){
+                item.remove()
+            }
+        })
+        materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+
+        for(let i=0; i<materialsData.length; i++){
+            let key = materialsData[i].getAttribute('data-key'),
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+
+            furniture.setDoorImage(val, parseInt(key))
+        }
+        if(!isChecked){
+            furniture.hideDoors()
+        }
+
+    }
+    else if (target.classList.contains('plus')){
+        if(input.value >= 4){
+            return
+        }
+        input.value++
+        furniture.hideDoors()
+        furniture.showDoors(input.value)
+        for(let i=0; i<materialsData.length; i++){
+            let key = materialsData[i].getAttribute('data-key'),
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+
+            furniture.setDoorImage(val, parseInt(key))
+        }
+        if(!isChecked){
+            furniture.hideDoors()
+        }
+
+        let container = document.createElement('DIV')
+
+        container.setAttribute('data-key', input.value)
+        container.setAttribute('class', 'option-wrap')
+        container.innerHTML = `<div class="option-title">
+              Дверь ${input.value}:
+            </div>
+            <div class="option-body">
+              <select name="consoles" onchange="doorsChangeVal(this)">
+                <option value="default">Материал</option>
+                <option value="mirror">Зеркало</option>
+                <option value="dsp">ДСП</option>
+              </select>
+            </div>`
+
+        list.append(container)
+    }
+
+})
+
+
+doorsCheckbox.addEventListener('click', function(e){
+    let count = document.body.querySelector('.amount-wrap.doors input').value,
+        materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+
+    if(!e.target.checked){
+        furniture.hideDoors()
+    }else{
+        furniture.showDoors(count)
+        for(let i=0; i<materialsData.length; i++){
+            let key = materialsData[i].getAttribute('data-key'),
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+
+            furniture.setDoorImage(val, parseInt(key))
+        }
+    }
+})
+
+window.doorsChangeVal = function ($this){
+    let val = $this.options[$this.selectedIndex].value,
+        wrap = $this.closest('.option-wrap'),
+        index = wrap.getAttribute('data-key'),
+        count = document.body.querySelector('.amount-wrap.doors input').value,
+        isChecked = doorsCheckbox.checked
+
+    if (!isChecked){
+        furniture.showDoors(count)
+    }
+
+    furniture.setDoorImage(val, index)
+
+    if (!isChecked){
+        furniture.hideDoors()
+    }
+}

@@ -6,27 +6,29 @@
     <link rel="stylesheet" href="src/css/styles.css">
   </head>
   <body>
+  <div class="doors-checkbox">
+    <label for="doors"><input id="doors" class="doors" type="checkbox" name="doors">Показать двери</label>
+  </div>
     <div id="app">
     </div>
 
-    <label for="doors">Показать двери<input id="doors" class="doors" type="checkbox" name="doors"></label>
-    <div class="console-wrap">
-      <div class="right-console-wrap">
-        <label for="rightConsole">Показать правую консоль<input id="rightConsole" class="rightConsole" type="checkbox" name="rightConsole"></label>
-        <button class="add-shelf-right-console hide">
-          Добавить полку в правую консоль
-        </button>
-      </div>
-      <div class="left-console-wrap">
-        <label for="leftConsole">Показать левую консоль<input id="leftConsole" class="leftConsole" type="checkbox" name="leftConsole"></label>
-        <button class="add-shelf-left-console hide">
-          Добавить полку в левую консоль
-        </button>
-      </div>
-    </div>
+
+    <!--<div class="console-wrap">-->
+      <!--<div class="right-console-wrap">-->
+        <!--<label for="rightConsole">Показать правую консоль<input id="rightConsole" class="rightConsole" type="checkbox" name="rightConsole"></label>-->
+        <!--<button class="add-shelf-right-console hide">-->
+          <!--Добавить полку в правую консоль-->
+        <!--</button>-->
+      <!--</div>-->
+      <!--<div class="left-console-wrap">-->
+        <!--<label for="leftConsole">Показать левую консоль<input id="leftConsole" class="leftConsole" type="checkbox" name="leftConsole"></label>-->
+        <!--<button class="add-shelf-left-console hide">-->
+          <!--Добавить полку в левую консоль-->
+        <!--</button>-->
+      <!--</div>-->
+    <!--</div>-->
 
     <div class="crossBar-wrap">
-      <button class="addCrossBar" data-group="1">Добавить штангу в 1 секцию</button>
       <label for="addCrossBar">Добавить штангу в 1 секцию<input id="addCrossBar" data-group="1" class="addCrossBar" type="checkbox" name="addCrossBar"></label>
     </div>
     <div class="shelves-wrap">
@@ -36,8 +38,141 @@
       <button class="addBox" data-group="1">Добавить ящик в 1 секцию</button>
     </div>
 
-    <button class="addSection" data-group="2">Добавить секцию</button>
+    <!--<button class="addSection" data-group="2">Добавить секцию</button>-->
     <!--<button class="removeSection">Удалить секцию</button>-->
+
+    <div class="bottom-wrap">
+
+
+      <div class="size-column column">
+        <div class="title">Размеры шкафа</div>
+        <div class="body">
+          <div class="option-wrap">
+            <div class="option-title">
+              Высота
+            </div>
+            <div class="option-body">
+              <label>
+                <input type="text" name="furniture_height" value="280" disabled> см.
+              </label>
+            </div>
+          </div>
+          <div class="option-wrap">
+            <div class="option-title">
+              Ширина
+            </div>
+            <div class="option-body">
+              <label>
+                <input type="text" name="furniture_width" value="380" disabled> см.
+              </label>
+            </div>
+          </div>
+          <div class="option-wrap">
+            <div class="option-title">
+              Глубина
+            </div>
+            <div class="option-body">
+              <label>
+                <input type="text" name="furniture_depth" disabled> см.
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="options-column column">
+        <div class="title">Параметры</div>
+        <div class="body">
+          <div class="option-wrap">
+            <div class="option-title">
+              Количество секций:
+            </div>
+            <div class="option-body">
+              <div class="amount-wrap sections">
+                <button class="minus">-</button>
+                <input type="text" value="1">
+                <button class="plus">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="option-wrap">
+            <div class="option-title">
+              Угловая консоль
+            </div>
+            <div class="option-body">
+              <select name="consoles" class="consoles">
+                <option value="no">Нет</option>
+                <option value="left">Левая</option>
+                <option value="right">Правая</option>
+                <option value="all">Все</option>
+              </select>
+            </div>
+          </div>
+          <div class="option-wrap">
+            <div class="option-title">
+              Козырек
+            </div>
+            <div class="option-body">
+              <select name="visor" disabled>
+                <option value="no">Нет</option>
+                <option value="yes">Да</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="doors-column column">
+        <div class="title">Количество дверей</div>
+        <div class="body">
+          <div class="option-wrap">
+            <div class="option-title">
+              Количество:
+            </div>
+            <div class="option-body">
+              <div class="amount-wrap doors">
+                <button class="minus">-</button>
+                <input type="text" value="2">
+                <button class="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="doors-options-column column">
+        <div class="title">Материал дверей</div>
+        <div class="body">
+          <div class="option-wrap" data-key="1">
+            <div class="option-title">
+              Дверь 1:
+            </div>
+            <div class="option-body">
+              <select name="materials" class="materials" onchange="doorsChangeVal(this)">
+                <option value="default">Материал</option>
+                <option value="mirror">Зеркало</option>
+                <option value="dsp">ДСП</option>
+              </select>
+            </div>
+          </div>
+          <div class="option-wrap" data-key="2">
+            <div class="option-title">
+              Дверь 2:
+            </div>
+            <div class="option-body">
+              <select name="materials" class="materials" onchange="doorsChangeVal(this)">
+                <option value="default">Материал</option>
+                <option value="mirror">Зеркало</option>
+                <option value="dsp">ДСП</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="/dist/build.js"></script>
   </body>
