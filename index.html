@@ -6,40 +6,28 @@
     <link rel="stylesheet" href="src/css/styles.css">
   </head>
   <body>
+
   <div class="doors-checkbox">
     <label for="doors"><input id="doors" class="doors" type="checkbox" name="doors">Показать двери</label>
   </div>
     <div id="app">
     </div>
+  <div v-model="positionX" class="buttons-wrap"></div>
 
 
-    <!--<div class="console-wrap">-->
-      <!--<div class="right-console-wrap">-->
-        <!--<label for="rightConsole">Показать правую консоль<input id="rightConsole" class="rightConsole" type="checkbox" name="rightConsole"></label>-->
-        <!--<button class="add-shelf-right-console hide">-->
-          <!--Добавить полку в правую консоль-->
-        <!--</button>-->
-      <!--</div>-->
-      <!--<div class="left-console-wrap">-->
-        <!--<label for="leftConsole">Показать левую консоль<input id="leftConsole" class="leftConsole" type="checkbox" name="leftConsole"></label>-->
-        <!--<button class="add-shelf-left-console hide">-->
-          <!--Добавить полку в левую консоль-->
-        <!--</button>-->
-      <!--</div>-->
-    <!--</div>-->
 
-    <div class="crossBar-wrap">
-      <label for="addCrossBar">Добавить штангу в 1 секцию<input id="addCrossBar" data-group="1" class="addCrossBar" type="checkbox" name="addCrossBar"></label>
+    <div class="crossBar-wrap hidden">
+      <label for="addCrossBar"><input id="addCrossBar" data-group="1" class="addCrossBar" type="checkbox" name="addCrossBar"></label>
     </div>
-    <div class="shelves-wrap">
-      <button class="addShelf" data-group="1">Добавить полку в 1 секцию</button>
+    <div class="shelves-wrap hidden">
+      <button class="addShelf" data-group="1"></button>
+      <button class="removeShelf" data-group="1"></button>
     </div>
-    <div class="box-wrap">
-      <button class="addBox" data-group="1">Добавить ящик в 1 секцию</button>
+    <div class="box-wrap hidden">
+      <button class="addBox" data-group="1"></button>
+      <button class="removeBox" data-group="1"></button>
     </div>
 
-    <!--<button class="addSection" data-group="2">Добавить секцию</button>-->
-    <!--<button class="removeSection">Удалить секцию</button>-->
 
     <div class="bottom-wrap">
 

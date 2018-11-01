@@ -14,29 +14,26 @@ document.body.addEventListener('click', function(e){
         let group = e.target.getAttribute('data-group')
         furniture.addShelf(group)
     }
-    else if (e.target.classList.contains('addSection')){
-        let group = e.target.getAttribute('data-group'),
-            shelf_span  = document.createElement('SPAN'),
-            box_span = document.createElement('SPAN'),
-            crossBar_span = document.createElement('SPAN')
-        furniture.addSection(group)
-        e.target.setAttribute('data-group', parseInt(group)+1)
-        shelf_span.innerHTML = `<button class="addShelf" data-group="${parseInt(group)}">Добавить полку в ${parseInt(group)} секцию</button>`
-        box_span.innerHTML = `<button class="addBox" data-group="${parseInt(group)}">Добавить ящик в ${parseInt(group)} секцию</button>`
-        crossBar_span.innerHTML = `<label for="addCrossBar${parseInt(group)}">Добавить штангу в ${parseInt(group)} секцию<input id="addCrossBar${parseInt(group)}" data-group="${parseInt(group)}" class="addCrossBar" type="checkbox" name="addCrossBar"></label>`
-        shelvesWrap.append(shelf_span)
-        boxesWrap.append(box_span)
-        crossBarWrap.append(crossBar_span)
+    else if (e.target.classList.contains('removeShelf')){
+        let group = e.target.getAttribute('data-group')
+        furniture.removeLastShelve(group)
     }
-    else if (e.target.classList.contains('removeSection')){
-        furniture.removeSection();
-    }
+
+    // else if (e.target.classList.contains('removeSection')){
+    //     furniture.removeSection();
+    // }
     else if (e.target.classList.contains('addBox')){
         let group = e.target.getAttribute('data-group')
         furniture.addBox(group)
     }
+    else if (e.target.classList.contains('removeBox')){
+        let group = e.target.getAttribute('data-group')
+        console.log(group)
+        furniture.removeBox(group)
+    }
     else if (e.target.classList.contains('addCrossBar')){
         let group = e.target.getAttribute('data-group')
+
         if(e.target.checked){
             furniture.addCrossBar(group)
         }else{

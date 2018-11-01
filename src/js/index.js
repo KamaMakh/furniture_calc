@@ -50,6 +50,12 @@ let furniture = {
                     y: 0,
                     height: this.height,
                     name: 'crossBar' + (this.groups.count + 1)
+                }),
+                buttonGroup: new Konva.Group({
+                    x: 0,
+                    y: 0,
+                    height: this.height,
+                    name: 'button' + (this.groups.count + 1)
                 })
             };
             this.groups.count++;
@@ -155,6 +161,15 @@ let furniture = {
         this.layers[this.layers.length] = polyBot;
         this.layer.add(polyBot);
         polyBot.setZIndex(1);
+
+        polyBot.on('mouseover', ()=>{
+            watchers.handleMouseOver(polyBot)
+            this.layer.draw()
+        })
+        polyBot.on('mouseleave', ()=>{
+            watchers.handleMouseLeave(polyBot)
+            this.layer.draw()
+        })
     },
 
     addShelf(section){
@@ -781,11 +796,14 @@ let furniture = {
             }
         }
 
+
         if(this.layer.find('.crossBar'+ (section-1).length) && this.layer.find('.crossBar' + (section-1)).hasOwnProperty(0)){
-            if(this.layer.find('.crossBar' + (section-1))[0].getZIndex() > this.groups['group' + (section - 1)]['sectionGroup'].getZIndex()){
+            while(this.layer.find('.crossBar' + (section-1))[0]['index'] > this.groups['group' + (section - 1)]['sectionGroup'].getZIndex()){
                 this.groups['group'+(section-1)]['crossBarGroup'].moveDown()
             }
         }
+
+
 
         this.sectionGroupPosition(this.getSectionsCount())
 
@@ -807,9 +825,12 @@ let furniture = {
         })
 
         polySection.on('dblclick', (e)=>{
-            let index = this.groups.count
-            this.removeSection(index)
+            let index = this.groups.count,
+                minusButton = document.body.querySelector('.amount-wrap.sections button.minus')
+            watchers.simulateClick(minusButton)
         })
+
+        this.createButton(section)
     },
     getSectionsCount(){
         let sections = {};
@@ -1506,6 +1527,24 @@ let furniture = {
         this.layer.draw()
     },
 
+    removeLastShelve(index){
+        if(!index){
+            index = this.groups['count']
+        }
+
+        if(this.groups['group'+index].hasOwnProperty('shelfGroup')){
+            let children = this.groups['group'+index]['shelfGroup']['children'],
+                boxCount = this.groups['group'+index]['boxGroup']['children']['length'],
+                height = this.height
+            children[children.length-1].remove()
+            for(let i = boxCount; i>0; i--){
+                height = height - 22 - 10;
+            }
+            this.shelfGroupPosition(this.groups['group'+index]['shelfGroup']['children'], index, height, name)
+            this.layer.draw()
+        }
+    },
+
     removeSection(index){
         if(!index){
             index = this.groups['count']
@@ -1521,12 +1560,29 @@ let furniture = {
         sectionGroup.removeChildren()
         this.groups['count'] -= 1
         this.sectionGroupPosition(this.getSectionsCount())
+        watchers.createButtons(this.groups, this.width, this.height, this.limitation)
         this.layer.draw()
         //watchers.watchSectionsCount(this.groups['count'])
     },
 
-    removeBox(){
+    removeBox(index){
+        if(!index){
+            index = this.groups['count']
+        }
 
+        if(this.groups['group'+index].hasOwnProperty('boxGroup')){
+            let children = this.groups['group'+index]['boxGroup']['children'],
+                boxCount,
+                height = this.height
+
+            children[children.length-1].remove()
+            boxCount = this.groups['group'+index]['boxGroup']['children']['length']
+            for(let i = boxCount; i>0; i--){
+                height = height - 22 - 10;
+            }
+            this.shelfGroupPosition(this.groups['group'+index]['shelfGroup']['children'], index, height, name)
+            this.layer.draw()
+        }
     },
 
     hideCrossBar(section){
@@ -1565,6 +1621,10 @@ let furniture = {
         }
     },
 
+    createButton(){
+        watchers.createButtons(this.groups, this.width, this.height, this.limitation);
+    },
+
     createLayer() {
         this.layer = new Konva.Layer();
     },
@@ -1588,9 +1648,8 @@ let furniture = {
         this.createRightSection()
         this.createTopSection()
         this.createStage(this.layer)
+        this.createButton(1)
     }
 };
-
-
 
 export {furniture}
