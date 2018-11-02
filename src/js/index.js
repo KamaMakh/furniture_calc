@@ -693,7 +693,7 @@ let furniture = {
             x: 0,
             y: 0-(boxHeight+10)*boxCount,
             name: 'box' + (this.groups['group'+section]['boxGroup']['length']?this.groups['group'+section]['boxGroup']['length']+1:1),
-            draggable: true
+            draggable: false
         })
 
         box.add(boxBottom,boxBack, boxLeft,boxRight,boxFront)
@@ -724,6 +724,9 @@ let furniture = {
         this.shelfGroupPosition(this.groups['group'+section]['shelfGroup']['children'], section, height)
         let currentGroup = this.groups['group'+(section)]
         if(currentGroup['boxGroup']['index'] > currentGroup['sectionGroup']['index']){
+            currentGroup['boxGroup'].moveDown()
+        }
+        if(currentGroup['boxGroup']['index'] > currentGroup['shelfGroup']['index']){
             currentGroup['boxGroup'].moveDown()
         }
         this.layer.draw();
@@ -1267,7 +1270,7 @@ let furniture = {
         this.layer.draw()
     },
 
-    showRightSideConsole(consoleWidth = 60){
+    showRightSideConsole(consoleWidth = 60, removeButtons = true){
         let height = this.height,
             x1 = this.limitation.right,
             y1 = this.limitation.top,
@@ -1326,6 +1329,9 @@ let furniture = {
         this.groups['rightConsoleGroup'].moveToTop()
         this.groups['rightConsoleGroup'].show()
         this.layer.draw()
+
+        let consoleElement = this.layer.find('.rightConsoleShelves')
+        watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'right', removeButtons)
     },
 
     addRightConsoleShelf(consoleWidth = 60){
@@ -1373,6 +1379,7 @@ let furniture = {
             this.layer.draw()
         }
 
+
         //methods
 
         shelf.on('mouseover', ()=>{
@@ -1394,7 +1401,7 @@ let furniture = {
         this.layer.draw()
     },
 
-    showLeftSideConsole(consoleWidth = -60){
+    showLeftSideConsole(consoleWidth = -60, removeButtons = true){
         let height = this.height,
             x1 = this.limitation.left,
             y1 = this.limitation.top,
@@ -1453,6 +1460,9 @@ let furniture = {
         this.groups['leftConsoleGroup'].moveToBottom()
         this.groups['leftConsoleGroup'].show()
         this.layer.draw()
+
+        let consoleElement = this.layer.find('.leftConsoleShelves')
+        watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'left', removeButtons)
     },
 
     addLeftConsoleShelf(consoleWidth = -60){
@@ -1543,6 +1553,18 @@ let furniture = {
             this.shelfGroupPosition(this.groups['group'+index]['shelfGroup']['children'], index, height, name)
             this.layer.draw()
         }
+    },
+
+    removeLastConsoleShelve(consoleType){
+        let consoleElement = this.layer.find('.'+consoleType),
+            children = consoleElement[0]['children'],
+            height = this.height
+
+        children[children.length-1].remove()
+
+        this.shelfGroupPosition(consoleElement[0]['children'], '', height, consoleType)
+        this.layer.draw()
+
     },
 
     removeSection(index){
@@ -1649,6 +1671,8 @@ let furniture = {
         this.createTopSection()
         this.createStage(this.layer)
         this.createButton(1)
+
+        window.myLayers = this.layer;
     }
 };
 

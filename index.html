@@ -7,14 +7,21 @@
   </head>
   <body>
 
-  <div class="doors-checkbox">
-    <label for="doors"><input id="doors" class="doors" type="checkbox" name="doors">Показать двери</label>
+  <div class="doors-checkbox-wrap">
+    <div class="doors-checkbox">
+      <label for="doors"><input id="doors" class="doors" type="checkbox" name="doors">Показать двери</label>
+    </div>
   </div>
+
     <div id="app">
     </div>
   <div v-model="positionX" class="buttons-wrap"></div>
 
-
+<div class="hidden-group hidden">
+  <button class="addshelfright">Прававя консоль</button>
+  <button class="addshelfleft">Прававя консоль</button>
+  <button class="removeLastConsoleShelve">Прававя консоль</button>
+</div>
 
     <div class="crossBar-wrap hidden">
       <label for="addCrossBar"><input id="addCrossBar" data-group="1" class="addCrossBar" type="checkbox" name="addCrossBar"></label>
@@ -27,6 +34,7 @@
       <button class="addBox" data-group="1"></button>
       <button class="removeBox" data-group="1"></button>
     </div>
+
 
 
     <div class="bottom-wrap">

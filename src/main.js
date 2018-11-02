@@ -99,7 +99,7 @@ consoles.onchange = function(obj){
     }
     else if (val == 'all'){
         furniture.showLeftSideConsole()
-        furniture.showRightSideConsole()
+        furniture.showRightSideConsole(60,false)
     }
     else{
         furniture.hideRightSideConsole()
@@ -231,3 +231,17 @@ window.doorsChangeVal = function ($this){
         furniture.hideDoors()
     }
 }
+
+
+
+document.body.querySelector('.addshelfright').addEventListener('click', function(){
+    furniture.addRightConsoleShelf()
+})
+
+document.body.querySelector('.addshelfleft').addEventListener('click', function(){
+    furniture.addLeftConsoleShelf()
+})
+document.body.querySelector('.removeLastConsoleShelve').addEventListener('click', function(){
+    let type = this.getAttribute('data-type')
+    furniture.removeLastConsoleShelve(type)
+})

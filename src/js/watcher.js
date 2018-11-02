@@ -144,6 +144,105 @@ let watchers = {
             })
         }
     },
+
+    createConsoleButton(groups, width, height, limits, consoleType, removeButtons){
+        let canvasWrap = document.body.querySelector('#app'),
+            canvasWrapLeft = canvasWrap.offsetLeft,
+            canvasWrapTop =  canvasWrap.offsetTop,
+            count = groups.length == 0 ? 0 : ['children']['length'],
+            oldButtons = document.body.querySelectorAll('.sectionButton.console')
+
+        if(removeButtons){
+            for(let i=0; i<oldButtons.length; i++){
+                oldButtons[i].remove()
+            }
+        }
+
+
+        let button = document.createElement('DIV'),
+            popup = document.createElement('DIV'),
+            shelvesAmount,
+            addShelfTrigger = document.querySelector('.addshelf'+consoleType),
+            removeShelfTrigger = document.querySelector('.removeLastConsoleShelve'),
+            popupIn = `<div class="shelves">
+                            <div class="title">Полки:</div>
+                            <div class="btn-wrap">
+                                <button class="minus">-</button>
+                                    <input type="text" value="${count}">
+                                <button class="plus">+</button>
+                            </div>
+                            
+                        </div>
+                        `
+
+        popup.innerHTML = popupIn
+        popup.setAttribute('class', 'popup')
+        popup.classList.add('hidden')
+
+        button.setAttribute('class', 'sectionButton console')
+        if(consoleType == 'right'){
+            button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.right+15}px;`
+        }
+        else{
+            button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.left-25}px;`
+        }
+
+        button.append(popup)
+        document.body.append(button)
+        //buttonsWrap.append(button)
+
+        button.addEventListener('click', function(e){
+            let closed = this.querySelector('.popup').classList.contains('hidden'),
+                target = e.target,
+                allButtuns = document.body.querySelectorAll('.sectionButton')
+
+            if(!target.classList.contains('sectionButton') && this == target.closest('.sectionButton')){
+                return
+            }
+            if(closed){
+                for(let i=0; i<allButtuns.length; i++){
+                    allButtuns[i].querySelector('.popup').classList.add('hidden')
+                }
+                this.querySelector('.popup').classList.remove('hidden')
+            }
+            else{
+                this.querySelector('.popup').classList.add('hidden')
+            }
+        })
+
+        document.body.addEventListener('keyup', function(e){
+            if (e.keyCode == 27){
+                let allPopups = document.body.querySelectorAll('.popup')
+                for(let i=0; i<allPopups.length; i++){
+                    allPopups[i].classList.add('hidden')
+                }
+            }
+        })
+
+        shelvesAmount = popup.querySelector('.shelves')
+        shelvesAmount.addEventListener('click', function(e){
+            let target = e.target,
+                input = this.querySelector('input')
+
+            if(target.classList.contains('minus')){
+                if(input.value <= 0){
+                    return
+                }
+                removeShelfTrigger.setAttribute('data-type', consoleType+'ConsoleShelves')
+                input.value--
+                watchers.simulateClick(removeShelfTrigger)
+            }
+            else if (target.classList.contains('plus')){
+                if(input.value > 20){
+                    return
+                }
+                input.value++
+
+                watchers.simulateClick(addShelfTrigger)
+            }
+        })
+
+    },
     handleMouseOver(konva, isButton = false){
         if(!isButton){
             konva.fill('rgba(225,225,225, 0.5)')

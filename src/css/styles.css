@@ -113,6 +113,10 @@
             border: none;
             outline: none; }
 
+.doors-checkbox-wrap {
+  width: 800px;
+  margin: 0 auto; }
+
 .doors-checkbox {
   width: 160px;
   height: 40px;
@@ -146,98 +150,99 @@
   display: flex;
   flex-flow: wrap row;
   justify-content: space-around; }
-  .buttons-wrap .sectionButton {
-    width: 30px;
-    height: 30px;
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    background: #ffffff url(/src/assets/button.png) 50% no-repeat;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -ms-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
-    cursor: pointer;
-    position: relative;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none; }
-    .buttons-wrap .sectionButton:hover {
-      background: #464657 url(/src/assets/button-white.png) 50% no-repeat; }
-    .buttons-wrap .sectionButton .popup {
-      position: absolute;
+
+.sectionButton {
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background: #ffffff url(/src/assets/button.png) 50% no-repeat;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .sectionButton:hover {
+    background: #464657 url(/src/assets/button-white.png) 50% no-repeat; }
+  .sectionButton .popup {
+    position: absolute;
+    display: flex;
+    flex-flow: wrap column;
+    align-items: center;
+    padding: 25px 30px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 240px;
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    right: -260px;
+    top: -50px;
+    color: #666666;
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 20px; }
+    .sectionButton .popup .shelves, .sectionButton .popup .boxes {
       display: flex;
-      flex-flow: wrap column;
+      flex-flow: wrap row;
       align-items: center;
-      padding: 25px 30px;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      width: 240px;
-      box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1);
-      background-color: #ffffff;
-      right: -260px;
-      top: -50px;
-      color: #666666;
-      font-family: Arial;
-      font-size: 14px;
-      line-height: 20px; }
-      .buttons-wrap .sectionButton .popup .shelves, .buttons-wrap .sectionButton .popup .boxes {
+      margin-bottom: 10px; }
+      .sectionButton .popup .shelves .title, .sectionButton .popup .boxes .title {
+        margin-right: 25px; }
+      .sectionButton .popup .shelves .btn-wrap, .sectionButton .popup .boxes .btn-wrap {
         display: flex;
         flex-flow: wrap row;
+        width: 100px;
+        height: 40px;
+        border-radius: 4px;
+        border: 1px solid #dadada;
+        background-color: #ffffff; }
+      .sectionButton .popup .shelves button, .sectionButton .popup .boxes button {
+        color: #333333;
+        justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px; }
-        .buttons-wrap .sectionButton .popup .shelves .title, .buttons-wrap .sectionButton .popup .boxes .title {
-          margin-right: 25px; }
-        .buttons-wrap .sectionButton .popup .shelves .btn-wrap, .buttons-wrap .sectionButton .popup .boxes .btn-wrap {
-          display: flex;
-          flex-flow: wrap row;
-          width: 100px;
-          height: 40px;
-          border-radius: 4px;
-          border: 1px solid #dadada;
-          background-color: #ffffff; }
-        .buttons-wrap .sectionButton .popup .shelves button, .buttons-wrap .sectionButton .popup .boxes button {
-          color: #333333;
-          justify-content: space-between;
-          align-items: center;
-          width: 33%;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box;
-          background: #fff;
-          -webkit-box-shadow: none;
-          -moz-box-shadow: none;
-          box-shadow: none;
-          border: none;
-          font-weight: bold;
-          font-size: 14px;
-          outline: none;
-          cursor: pointer; }
-        .buttons-wrap .sectionButton .popup .shelves input, .buttons-wrap .sectionButton .popup .boxes input {
-          color: #888888;
-          font-family: Arial;
-          font-size: 13px;
-          line-height: 20px;
-          text-align: center;
-          width: 33%;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box;
-          border: none;
-          outline: none; }
-      .buttons-wrap .sectionButton .popup .crossbar label {
-        display: flex;
-        flex-flow: wrap row;
-        align-items: center;
+        width: 33%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        background: #fff;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        border: none;
+        font-weight: bold;
+        font-size: 14px;
+        outline: none;
         cursor: pointer; }
-        .buttons-wrap .sectionButton .popup .crossbar label input {
-          margin-right: 10px;
-          width: 20px;
-          height: 20px;
-          border-radius: 2px;
-          border: 1px solid #dadada;
-          background-color: #ffffff; }
+      .sectionButton .popup .shelves input, .sectionButton .popup .boxes input {
+        color: #888888;
+        font-family: Arial;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+        width: 33%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: none;
+        outline: none; }
+    .sectionButton .popup .crossbar label {
+      display: flex;
+      flex-flow: wrap row;
+      align-items: center;
+      cursor: pointer; }
+      .sectionButton .popup .crossbar label input {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+        border: 1px solid #dadada;
+        background-color: #ffffff; }
 
 /*# sourceMappingURL=styles.css.map */
