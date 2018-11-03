@@ -50,7 +50,7 @@ let watchers = {
 
             button.setAttribute('class', 'sectionButton')
             button.setAttribute('data-key', i+1)
-            button.style.cssText += ';' + `z-index:${count-(i+1)};`
+            button.style.cssText += ';' + `z-index:${count+100-(i+1)};`
             button.append(popup)
             buttonsWrap.append(button)
 

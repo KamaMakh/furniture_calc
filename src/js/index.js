@@ -285,8 +285,9 @@ let furniture = {
             // e.target.remove()
             // this.shelfGroupPosition(this.groups['group'+section]['shelfGroup']['children'], section, height);
             // this.layer.draw()
-
-            this.removeShelves(e.target, this.groups['group'+section]['shelfGroup']['children'], section, height)
+            //let removeShelfTrigger = document.querySelector('.removeShelf')
+            //watchers.simulateClick(removeShelfTrigger)
+            //this.removeShelves(e.target, this.groups['group'+section]['shelfGroup']['children'], section, height)
         })
     },
 
@@ -1390,10 +1391,10 @@ let furniture = {
             watchers.handleMouseLeave(shelf)
             this.layer.draw()
         })
-        shelf.on('dblclick', (e)=>{
-            let consoleElement = this.layer.find('.rightConsoleShelves')
-            this.removeShelves(e.target,consoleElement[0]['children'], '', height, 'rightConsoleShelves')
-        })
+        // shelf.on('dblclick', (e)=>{
+        //     let consoleElement = this.layer.find('.rightConsoleShelves')
+        //     this.removeShelves(e.target,consoleElement[0]['children'], '', height, 'rightConsoleShelves')
+        // })
     },
 
     hideRightSideConsole(){
@@ -1520,10 +1521,10 @@ let furniture = {
             watchers.handleMouseLeave(shelf)
             this.layer.draw()
         })
-        shelf.on('dblclick', (e)=>{
-            let consoleElement = this.layer.find('.leftConsoleShelves')
-            this.removeShelves(e.target,consoleElement[0]['children'], '', height, 'leftConsoleShelves')
-        })
+        // shelf.on('dblclick', (e)=>{
+        //     let consoleElement = this.layer.find('.leftConsoleShelves')
+        //     this.removeShelves(e.target,consoleElement[0]['children'], '', height, 'leftConsoleShelves')
+        // })
     },
 
     hideLeftSideConsole(){
