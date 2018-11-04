@@ -19,8 +19,8 @@ let furniture = {
         x: 70,
         y: 70
     },
-    height: 280,
-    width:380,
+    height: window.furniture_calc.height ? window.furniture_calc.height : 280,
+    width: window.furniture_calc.width ? window.furniture_calc.width : 380,
     bevelDegreeX: 40,
     bevelDegreeY: 43,
     strokeColor: '#868686',
@@ -1272,6 +1272,11 @@ let furniture = {
     },
 
     showRightSideConsole(consoleWidth = 60, removeButtons = true){
+        if(this.groups['rightConsoleGroup']['children']['length']){
+            this.groups['rightConsoleGroup'].show()
+            this.layer.draw()
+            return
+        }
         let height = this.height,
             x1 = this.limitation.right,
             y1 = this.limitation.top,
@@ -1398,11 +1403,19 @@ let furniture = {
     },
 
     hideRightSideConsole(){
-        this.groups['rightConsoleGroup'].removeChildren()
+       // this.groups['rightConsoleGroup'].removeChildren()
+        this.groups['rightConsoleGroup'].hide()
         this.layer.draw()
     },
 
     showLeftSideConsole(consoleWidth = -60, removeButtons = true){
+
+        if(this.groups['leftConsoleGroup']['children']['length']){
+            this.groups['leftConsoleGroup'].show()
+            this.layer.draw()
+            return
+        }
+
         let height = this.height,
             x1 = this.limitation.left,
             y1 = this.limitation.top,
@@ -1528,7 +1541,7 @@ let furniture = {
     },
 
     hideLeftSideConsole(){
-        this.groups['leftConsoleGroup'].removeChildren()
+        this.groups['leftConsoleGroup'].hide()
         this.layer.draw()
     },
 
@@ -1614,29 +1627,19 @@ let furniture = {
         this.layer.draw()
     },
 
-    setDoorImage(val, index){
+    setDoorImage(val, index, src){
         let doors = this.layer.find('.doors'),
             currentDoor = doors[0]['children'][index-1]
 
-        if(val == 'mirror'){
+        if(src){
             let imageObj = new Image()
             imageObj.onload = ()=>{
                 currentDoor.fillPatternImage(imageObj)
                 this.layer.draw()
 
             }
-            imageObj.src = 'src/assets/mirror.png'
+            imageObj.src = src
             currentDoor.fill('')
-        }
-        else if (val == 'dsp'){
-            let imageObj = new Image()
-            imageObj.onload = ()=>{
-                currentDoor.fillPatternImage(imageObj)
-                currentDoor.fill('')
-                this.layer.draw()
-
-            }
-            imageObj.src = 'src/assets/dsp.png'
         }
         else{
             currentDoor.fill('#fff')

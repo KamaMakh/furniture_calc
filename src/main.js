@@ -134,7 +134,8 @@ doorsAmount.addEventListener('click', function(e){
 
 
     if(target.classList.contains('minus')){
-        if(input.value <= 2){
+        let minDoors = window.furniture_calc.min_doors ? window.furniture_calc.min_doors : 2
+        if(input.value <= minDoors){
             return
         }
         input.value--
@@ -160,7 +161,8 @@ doorsAmount.addEventListener('click', function(e){
 
     }
     else if (target.classList.contains('plus')){
-        if(input.value >= 4){
+        let maxDoors = window.furniture_calc.max_doors ? window.furniture_calc.max_doors : 4
+        if(input.value >= maxDoors){
             return
         }
         input.value++
@@ -180,7 +182,9 @@ doorsAmount.addEventListener('click', function(e){
 
         container.setAttribute('data-key', input.value)
         container.setAttribute('class', 'option-wrap')
-        container.innerHTML = `<div class="option-title">
+
+        if(!window.furniture_calc.door_materials_template){
+            container.innerHTML = `<div class="option-title">
               Дверь ${input.value}:
             </div>
             <div class="option-body">
@@ -190,6 +194,13 @@ doorsAmount.addEventListener('click', function(e){
                 <option value="dsp">ДСП</option>
               </select>
             </div>`
+        }
+        else{
+            container.innerHTML = `<div class="option-title">
+              Дверь ${input.value}:
+            </div>
+            ${window.furniture_calc.door_materials_template}`
+        }
 
         list.append(container)
     }
@@ -219,13 +230,14 @@ window.doorsChangeVal = function ($this){
         wrap = $this.closest('.option-wrap'),
         index = wrap.getAttribute('data-key'),
         count = document.body.querySelector('.amount-wrap.doors input').value,
-        isChecked = doorsCheckbox.checked
+        isChecked = doorsCheckbox.checked,
+        src = $this.options[$this.selectedIndex].getAttribute('data-src')
 
     if (!isChecked){
         furniture.showDoors(count)
     }
 
-    furniture.setDoorImage(val, index)
+    furniture.setDoorImage(val, index, src)
 
     if (!isChecked){
         furniture.hideDoors()

@@ -1,3 +1,5 @@
+window.furniture_calc = {}
+
 let watchers = {
     createButtons(groups, width, height, limits){
         let canvasWrap = document.body.querySelector('#app'),
@@ -121,7 +123,8 @@ let watchers = {
                     watchers.simulateClick(removeBoxTrigger)
                 }
                 else if (target.classList.contains('plus')){
-                    if(input.value > 20){
+                    let maxShelves = window.furniture_calc.max_shelves ? window.furniture_calc.max_shelves : 6
+                    if(input.value > maxShelves){
                         return
                     }
                     input.value++
@@ -184,7 +187,7 @@ let watchers = {
             button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.right+15}px;`
         }
         else{
-            button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.left-25}px;`
+            button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.left-25}px; z-index:200;};`
         }
 
         button.append(popup)
@@ -233,7 +236,8 @@ let watchers = {
                 watchers.simulateClick(removeShelfTrigger)
             }
             else if (target.classList.contains('plus')){
-                if(input.value > 20){
+                let maxShelves = window.furniture_calc.max_console_shelves ? window.furniture_calc.max_console_shelves : 6
+                if(input.value > maxShelves){
                     return
                 }
                 input.value++
