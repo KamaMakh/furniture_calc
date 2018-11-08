@@ -1,4 +1,7 @@
-window.furniture_calc = {}
+if(!window.hasOwnProperty('furniture_calc')){
+    window.furniture_calc = {}
+}
+
 
 let watchers = {
     createButtons(groups, width, height, limits){
@@ -100,7 +103,8 @@ let watchers = {
                     watchers.simulateClick(removeShelfTrigger)
                 }
                 else if (target.classList.contains('plus')){
-                    if(input.value > 20){
+                    let maxShelves = window.furniture_calc.max_shelves ? window.furniture_calc.max_shelves : 6
+                    if(input.value >= maxShelves){
                         return
                     }
                     input.value++
@@ -123,8 +127,8 @@ let watchers = {
                     watchers.simulateClick(removeBoxTrigger)
                 }
                 else if (target.classList.contains('plus')){
-                    let maxShelves = window.furniture_calc.max_shelves ? window.furniture_calc.max_shelves : 6
-                    if(input.value > maxShelves){
+                    let maxBoxes = window.furniture_calc.max_boxes ? window.furniture_calc.max_boxes : 2
+                    if(input.value >= maxBoxes){
                         return
                     }
                     input.value++
@@ -153,14 +157,11 @@ let watchers = {
             canvasWrapLeft = canvasWrap.offsetLeft,
             canvasWrapTop =  canvasWrap.offsetTop,
             count = groups.length == 0 ? 0 : ['children']['length'],
-            oldButtons = document.body.querySelectorAll('.sectionButton.console')
+            oldButton = document.body.querySelectorAll('.sectionButton.console.'+consoleType)
 
-        if(removeButtons){
-            for(let i=0; i<oldButtons.length; i++){
-                oldButtons[i].remove()
-            }
+        if(oldButton.length){
+            return
         }
-
 
         let button = document.createElement('DIV'),
             popup = document.createElement('DIV'),
@@ -185,9 +186,11 @@ let watchers = {
         button.setAttribute('class', 'sectionButton console')
         if(consoleType == 'right'){
             button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.right+15}px;`
+            button.classList.add('right')
         }
         else{
             button.style.cssText += ';' + `position:absolute;top:${canvasWrapTop+height+100}px; left: ${canvasWrapLeft+limits.left-25}px; z-index:200;};`
+            button.classList.add('left')
         }
 
         button.append(popup)
@@ -237,7 +240,7 @@ let watchers = {
             }
             else if (target.classList.contains('plus')){
                 let maxShelves = window.furniture_calc.max_console_shelves ? window.furniture_calc.max_console_shelves : 6
-                if(input.value > maxShelves){
+                if(input.value >= maxShelves){
                     return
                 }
                 input.value++
@@ -245,7 +248,11 @@ let watchers = {
                 watchers.simulateClick(addShelfTrigger)
             }
         })
-
+    },
+    hideConsoleButton(type){
+        let child  = document.body.querySelector('.sectionButton.console.'+type)
+        if(!child) return
+        child.remove()
     },
     handleMouseOver(konva, isButton = false){
         if(!isButton){

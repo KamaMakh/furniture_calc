@@ -18,17 +18,12 @@ document.body.addEventListener('click', function(e){
         let group = e.target.getAttribute('data-group')
         furniture.removeLastShelve(group)
     }
-
-    // else if (e.target.classList.contains('removeSection')){
-    //     furniture.removeSection();
-    // }
     else if (e.target.classList.contains('addBox')){
         let group = e.target.getAttribute('data-group')
         furniture.addBox(group)
     }
     else if (e.target.classList.contains('removeBox')){
         let group = e.target.getAttribute('data-group')
-        console.log(group)
         furniture.removeBox(group)
     }
     else if (e.target.classList.contains('addCrossBar')){
@@ -39,14 +34,6 @@ document.body.addEventListener('click', function(e){
         }else{
             furniture.hideCrossBar(group)
         }
-    }
-    else if (e.target.classList.contains('doors')){
-
-        // if(!e.target.checked){
-        //     furniture.hideDoors()
-        // }else{
-        //     furniture.showDoors()
-        // }
     }
     else if (e.target.classList.contains('rightConsole')){
         let shelfButton = document.querySelector('.add-shelf-right-console')
@@ -84,8 +71,6 @@ let consoles = document.body.querySelector('.consoles'),
     doorOptionColumn = document.body.querySelector('.doors-options-column.column'),
     materials = document.body.querySelectorAll('.materials')
 
-
-
 consoles.onchange = function(obj){
     let val = this.options[this.selectedIndex].value
 
@@ -99,7 +84,7 @@ consoles.onchange = function(obj){
     }
     else if (val == 'all'){
         furniture.showLeftSideConsole()
-        furniture.showRightSideConsole(60,false)
+        furniture.showRightSideConsole()
     }
     else{
         furniture.hideRightSideConsole()
@@ -119,6 +104,10 @@ sectionsAmount.addEventListener('click', function(e){
         furniture.removeSection();
     }
     else if (target.classList.contains('plus')){
+        let maxSections = window.furniture_calc.max_sections ? window.furniture_calc.max_sections : 4
+        if(input.value >= maxSections){
+           return
+        }
         input.value++
         furniture.addSection(input.value)
     }
@@ -151,9 +140,10 @@ doorsAmount.addEventListener('click', function(e){
 
         for(let i=0; i<materialsData.length; i++){
             let key = materialsData[i].getAttribute('data-key'),
-                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
+                src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
 
-            furniture.setDoorImage(val, parseInt(key))
+            furniture.setDoorImage(val, parseInt(key), src)
         }
         if(!isChecked){
             furniture.hideDoors()
@@ -170,9 +160,10 @@ doorsAmount.addEventListener('click', function(e){
         furniture.showDoors(input.value)
         for(let i=0; i<materialsData.length; i++){
             let key = materialsData[i].getAttribute('data-key'),
-                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
+                src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
 
-            furniture.setDoorImage(val, parseInt(key))
+            furniture.setDoorImage(val, parseInt(key), src)
         }
         if(!isChecked){
             furniture.hideDoors()
@@ -218,9 +209,10 @@ doorsCheckbox.addEventListener('click', function(e){
         furniture.showDoors(count)
         for(let i=0; i<materialsData.length; i++){
             let key = materialsData[i].getAttribute('data-key'),
-                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value
+                val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
+                src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
 
-            furniture.setDoorImage(val, parseInt(key))
+            furniture.setDoorImage(val, parseInt(key), src)
         }
     }
 })

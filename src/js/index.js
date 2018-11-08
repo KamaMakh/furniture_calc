@@ -226,9 +226,7 @@ let furniture = {
             this.shelfsDefaultPositions['shelfX2'] = shelf.attrs.points[6];
         }
 
-        if(this.layer.find('.rightSection')){
-            rightSectionIndex = this.layer.find('.rightSection')[0].getZIndex()
-        }
+
         if(this.layer.find('.box' + section).length){
             oldZIndex = this.layer.find('.box' + section)[0].getZIndex()+1;
         }
@@ -262,6 +260,11 @@ let furniture = {
         if(leftSection[0]['index']>this.groups['group'+section]['shelfGroup'].getZIndex()){
             this.groups['group'+section]['shelfGroup'].moveUp()
         }
+
+        if(this.layer.find('.rightSection')){
+            rightSectionIndex = this.layer.find('.rightSection')[0].getZIndex()
+        }
+
         if(rightSectionIndex < this.groups['group'+section]['shelfGroup'].getZIndex()){
             this.groups['group'+section]['shelfGroup'].moveDown()
         }
@@ -1275,6 +1278,8 @@ let furniture = {
         if(this.groups['rightConsoleGroup']['children']['length']){
             this.groups['rightConsoleGroup'].show()
             this.layer.draw()
+            let consoleElement = this.layer.find('.rightConsoleShelves')
+            watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'right')
             return
         }
         let height = this.height,
@@ -1403,9 +1408,9 @@ let furniture = {
     },
 
     hideRightSideConsole(){
-       // this.groups['rightConsoleGroup'].removeChildren()
         this.groups['rightConsoleGroup'].hide()
         this.layer.draw()
+        watchers.hideConsoleButton('right')
     },
 
     showLeftSideConsole(consoleWidth = -60, removeButtons = true){
@@ -1413,6 +1418,8 @@ let furniture = {
         if(this.groups['leftConsoleGroup']['children']['length']){
             this.groups['leftConsoleGroup'].show()
             this.layer.draw()
+            let consoleElement = this.layer.find('.leftConsoleShelves')
+            watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'left')
             return
         }
 
@@ -1543,6 +1550,7 @@ let furniture = {
     hideLeftSideConsole(){
         this.groups['leftConsoleGroup'].hide()
         this.layer.draw()
+        watchers.hideConsoleButton('left')
     },
 
     removeShelves(target, children, section, height, name){
