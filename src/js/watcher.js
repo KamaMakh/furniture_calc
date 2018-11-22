@@ -76,6 +76,12 @@ let watchers = {
                 else{
                     this.querySelector('.popup').classList.add('hidden')
                 }
+
+                document.body.addEventListener('click', (c)=>{
+                    if (c.target.querySelector('.sectionButton') || c.target.classList.contains('buttons-wrap') || c.target.getAttribute('id')=='app' || c.target.tagName == 'CANVAS'){
+                        this.querySelector('.popup').classList.add('hidden')
+                    }
+                })
             })
 
             document.body.addEventListener('keyup', function(e){

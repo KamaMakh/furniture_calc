@@ -21,6 +21,8 @@ let furniture = {
     },
     height: window.furniture_calc.height ? window.furniture_calc.height : 280,
     width: window.furniture_calc.width ? window.furniture_calc.width : 380,
+    current_height: null,
+    current_width: null,
     bevelDegreeX: 40,
     bevelDegreeY: 43,
     strokeColor: '#868686',
@@ -66,9 +68,7 @@ let furniture = {
                 y: 0,
                 name: 'doors',
                 draggable: false
-            });
-            this.layer.add(this.groups['doorsGroup'])
-
+            })
             this.groups['rightConsoleGroup'] = new Konva.Group({
                 x: 0,
                 y: 0,
@@ -82,8 +82,17 @@ let furniture = {
                 draggable: false
             })
 
+            this.groups['visorGroup'] = new Konva.Group({
+                x: 0,
+                y: 0,
+                name: 'visor',
+                draggable: false
+            })
+
+            this.layer.add(this.groups['doorsGroup'])
             this.layer.add(this.groups['rightConsoleGroup'])
             this.layer.add(this.groups['leftConsoleGroup'])
+            this.layer.add(this.groups['visorGroup'])
         }
     },
     createLeftSection() {
@@ -106,61 +115,232 @@ let furniture = {
     },
 
     createRightSection() {
-        let x1 = this.firstPoint.x;
-        let y1 = this.firstPoint.y;
-        let width = this.width;
-        let height = this.height;
-        let polyRight = new Konva.Line({
+        let x1 = this.firstPoint.x,
+            y1 = this.firstPoint.y,
+            width = this.width,
+            height = this.height,
+            polyRight = new Konva.Line({
             points: [x1+width, y1, x1+width+40,y1-43, x1+width+40, y1-43+height, x1+width, y1+height, x1+width, y1],
             fill: 'white',
             stroke: this.strokeColor,
             strokeWidth: 1,
             closed : true,
+            draggable: true,
             name: 'rightSection'
-        });
+        }),
+            startPoint
+
+        polyRight.attrs.dragBoundFunc = (pos) => {
+            let minX = this.limitation.left,
+                maxX = this.limitation.right,
+                newX,
+                maxWidth = window.furniture_calc.max_width ? window.furniture_calc.max_width : 500,
+                minWidth = window.furniture_calc.min_width ? window.furniture_calc.min_width : 150,
+                changedX = polyRight.attrs.x ? polyRight.attrs.x : 0,
+                topSection = this.layer.find('.topSection'),
+                botSection = this.layer.find('.botSection')
+
+            if(width + pos.x <= minWidth){
+                newX = -(width-minWidth)
+            }else if (width + pos.x >= maxWidth){
+                newX = maxWidth - width
+            }else{
+                newX = pos.x
+            }
+
+            this.layer.draw()
+            return {
+                x: newX,
+                y: 0
+            }
+        }
 
         this.limitation['right'] = polyRight.attrs.points[0];
-        this.layers[this.layers.length] = polyRight;
         this.layer.add(polyRight);
         polyRight.setZIndex(50);
+        polyRight.on('dragmove',()=>{
+
+            let changedX = polyRight.attrs.x ? polyRight.attrs.x : 0,
+                topSection = this.layer.find('.topSection'),
+                botSection = this.layer.find('.botSection'),
+                visor = this.layer.find('.visor'),
+                doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
+                isChecked = doorsCheckbox.checked,
+                doorsAmount = document.body.querySelector('.amount-wrap.doors'),
+                input = doorsAmount.querySelector('input'),
+                furnitureWidthInput = document.getElementById('furniture_width')
+
+            startPoint = startPoint ? startPoint : this.limitation.right
+
+            topSection[0]['attrs']['points'][4] = startPoint + 40 + changedX
+            topSection[0]['attrs']['points'][6] = startPoint + changedX
+            botSection[0]['attrs']['points'][4] = startPoint + 40 + changedX
+            botSection[0]['attrs']['points'][6] = startPoint + changedX
+            if(visor[0]['children']['length']){
+                visor[0]['children'][0]['attrs']['points'][4] = startPoint - 20 + changedX
+                visor[0]['children'][0]['attrs']['points'][6] = startPoint + changedX
+                visor.moveToTop()
+            }
+
+            this.limitation['right'] = polyRight.attrs.points[0] + changedX
+            this['current_width'] = width + changedX
+
+            window.furniture_calc.width = width + changedX
+            furnitureWidthInput.value = window.furniture_calc.width
+
+            if(isChecked){
+                this.hideDoors()
+                this.showDoors(input.value)
+            }
+            this.sectionGroupPosition(this.getSectionsCount(), this.width+changedX)
+            this.layer.draw()
+        })
+        polyRight.on('dragend', function(){
+            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+            for(let i=0; i<materialsData.length; i++){
+                let key = materialsData[i].getAttribute('data-key'),
+                    val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
+                    src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
+
+                furniture.setDoorImage(val, parseInt(key), src)
+            }
+        })
+        polyRight.on('mouseover', ()=>{
+            watchers.handleMouseOver(polyRight)
+            this.layer.draw()
+        })
+        polyRight.on('mouseleave', ()=>{
+            watchers.handleMouseLeave(polyRight)
+            this.layer.draw()
+        })
     },
     createTopSection() {
-        let x1 = this.firstPoint.x;
-        let y1 = this.firstPoint.y;
-        let width = this.width;
-        let polyTop = new Konva.Line({
-            points: [x1, y1, x1+40, y1-43 , x1+width+40, y1-43, x1+width, y1, x1+width, y1],
+        let x1 = this.firstPoint.x,
+            y1 = this.firstPoint.y,
+            height = this.height,
+            width = this.width,
+            polyTop = new Konva.Line({
+            points: [x1, y1, x1+40, y1-43 , x1+width+40, y1-43, x1+width, y1, x1, y1],
             fill: 'white',
             stroke: this.strokeColor,
             strokeWidth: 1,
+            draggable: false,
             closed : true,
             name: 'topSection'
-        });
+        })
 
-        this.limitation['top'] = polyTop.attrs.points[1];
-        this.layers[this.layers.length] = polyTop;
-        this.layer.add(polyTop);
-        polyTop.setZIndex(60);
+        this.limitation['top'] = polyTop.attrs.points[1]
+        this.layers[this.layers.length] = polyTop
+        this.layer.add(polyTop)
+        polyTop.setZIndex(60)
     },
 
     createBotSection() {
-        let x1 = this.firstPoint.x;
-        let y1 = this.firstPoint.y;
-        let width = this.width;
-        let height = this.height;
-        let polyBot = new Konva.Line({
-            points: [x1, y1+height, x1+40, y1+height-43 , x1+40+width, y1+height-43, x1+width, y1+height, x1+width, y1+height],
+        let x1 = this.firstPoint.x,
+            y1 = this.firstPoint.y,
+            width = this.width,
+            height = this.height,
+            polyBot = new Konva.Line({
+            points: [x1, y1+height, x1+40, y1+height-43 , x1+40+width, y1+height-43, x1+width, y1+height, x1, y1+height],
             fill: 'white',
             stroke: this.strokeColor,
             strokeWidth: 1,
             closed : true,
+            draggable: true,
             name: 'botSection'
-        });
+        }), startPoint
 
         this.limitation['bottom'] = polyBot.attrs.points[1];
         this.layers[this.layers.length] = polyBot;
         this.layer.add(polyBot);
         polyBot.setZIndex(1);
+
+        polyBot.attrs.dragBoundFunc = (pos) => {
+            let newY,
+                maxHeight = window.furniture_calc.max_height ? window.furniture_calc.max_height : 300,
+                minHeight = window.furniture_calc.min_height ? window.furniture_calc.min_height : 150,
+                topSection = this.layer.find('.topSection'),
+                botSection = this.layer.find('.botSection')
+
+            if(height + pos.y <= minHeight){
+                newY = -(height-minHeight)
+            }else if (height + pos.y >= maxHeight){
+                newY = maxHeight - height
+            }else{
+                newY = pos.y
+            }
+
+            //this.sectionGroupPosition(this.getSectionsCount(), height+newY)
+
+            this.layer.draw()
+            return {
+                x: 0,
+                y: newY
+            }
+        }
+
+        polyBot.on('dragmove',()=>{
+
+            let changedY = polyBot.attrs.y ? polyBot.attrs.y : 0,
+                leftSection = this.layer.find('.leftSection'),
+                rightSection = this.layer.find('.rightSection'),
+                allSections = this.layer.find('.section1'),
+                visor = this.layer.find('.visor'),
+                doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
+                isChecked = doorsCheckbox.checked,
+                doorsAmount = document.body.querySelector('.amount-wrap.doors'),
+                input = doorsAmount.querySelector('input'),
+                furnitureHeightInput = document.getElementById('furniture_height'),
+                sections = this.groups
+
+            startPoint = startPoint ? startPoint : this.limitation.bottom
+
+            leftSection[0]['attrs']['points'][5] = rightSection[0]['attrs']['points'][5] = startPoint + changedY - 40
+            leftSection[0]['attrs']['points'][7] = rightSection[0]['attrs']['points'][7] = startPoint + changedY
+
+            for(let key in allSections){
+                if(allSections.hasOwnProperty(key)){
+                    let child = allSections[key]
+                    if(child.hasOwnProperty('nodeType') && child.nodeType == 'Shape'){
+                        child['attrs']['points'][5] = startPoint + changedY - 40
+                        child['attrs']['points'][7] = startPoint + changedY
+                    }
+                }
+            }
+
+            this.limitation['bottom'] = polyBot.attrs.points[1] + changedY
+            window.furniture_calc.height = height + changedY
+            furnitureHeightInput.value = window.furniture_calc.height
+
+            if(isChecked){
+                this.hideDoors()
+                this.showDoors(input.value)
+            }
+
+            for(let i = 1; i<=sections.count; i++){
+                let boxCount = 0
+
+                if(this.layer.find('.box'+i).length){
+                    this.layer.find('.box'+i).y(changedY)
+                    boxCount = this.layer.find('.box'+i)[0]['children']['length'] * (22+10) // 22 - высота ящика, 10 - промежуток между ящиками
+                    this.layer.draw()
+                }
+                this.shelfGroupPosition(this.groups['group'+i]['shelfGroup']['children'], i, window.furniture_calc.height - boxCount, false)
+
+            }
+            this.layer.draw()
+        })
+
+        polyBot.on('dragend', function(){
+            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+            for(let i=0; i<materialsData.length; i++){
+                let key = materialsData[i].getAttribute('data-key'),
+                    val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
+                    src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
+
+                furniture.setDoorImage(val, parseInt(key), src)
+            }
+        })
 
         polyBot.on('mouseover', ()=>{
             watchers.handleMouseOver(polyBot)
@@ -249,6 +429,10 @@ let furniture = {
         }else{
             this.layer.add(this.groups['group'+section]['shelfGroup']);
             this.groups['group'+section]['shelfGroup'].setZIndex(oldZIndex+1);
+        }
+
+        if(window.furniture_calc.hasOwnProperty('height')){
+            height = window.furniture_calc.height
         }
 
         for(let i = boxCount; i>0; i--){
@@ -524,7 +708,8 @@ let furniture = {
             height = this.height,
             sections = {},
             boxX1 = this.firstPoint.x,
-            boxY1 = this.firstPoint.y + this.height - 20;
+            boxY1 = this.firstPoint.y + this.height - 20,
+            bottomLimitDiff = (this.limitation.top + this.height) - this.limitation.bottom
         for(let i = 1; i<this.groups.count; i++){
             sections[i] = this.groups['group'+i]['sectionGroup']['children'][0]
             sections['length'] = i
@@ -696,12 +881,13 @@ let furniture = {
         let box = new Konva.Group({
             x: 0,
             y: 0-(boxHeight+10)*boxCount,
-            name: 'box' + (this.groups['group'+section]['boxGroup']['length']?this.groups['group'+section]['boxGroup']['length']+1:1),
+            name: 'boxx' + (this.groups['group'+section]['boxGroup']['length']?this.groups['group'+section]['boxGroup']['length']+1:1),
             draggable: false
         })
 
         box.add(boxBottom,boxBack, boxLeft,boxRight,boxFront)
         this.groups['group'+section]['boxGroup'].add(box)
+        this.groups['group'+section]['boxGroup'].y(-bottomLimitDiff)
         boxCount = this.groups['group'+section]['boxGroup']['children']['length']
         for(let key in this.stage.children[0]['children']){
             if(this.stage.children[0]['children'].hasOwnProperty(key)){
@@ -741,7 +927,7 @@ let furniture = {
         let x1 = this.firstPoint.x,
             y1 = this.firstPoint.y,
             width = this.width,
-            height = this.height,
+            height = this.limitation.bottom - this.limitation.top,
             polySection = new Konva.Line({
                 points: [width/2 + x1, y1, width/2 + x1+40, y1-43, width/2 + x1+40, y1+height-43, width/2 + x1, y1+height, width/2 + x1, y1],
                 fill: 'white',
@@ -751,7 +937,10 @@ let furniture = {
                 draggable: true,
                 name: 'section1'
             }),
-            oldZIndex,maxZIndex
+            oldZIndex,maxZIndex,
+            rightSection = this.layer.find('.rightSection'),
+            leftSection = this.layer.find('.leftSection'),
+            changedGlobalWidth = rightSection[0].attrs.x ? rightSection[0].attrs.x : 0
 
         if(!this.groups['group'+(this.groups.count-1)].hasOwnProperty('sectionGroup')){
             let sectionGroup = new Konva.Group({
@@ -811,13 +1000,12 @@ let furniture = {
         }
 
 
-
-        this.sectionGroupPosition(this.getSectionsCount())
-
-        let leftSection = this.layer.find('.leftSection')
         if(leftSection[0]['index']>this.groups['group' + (section - 1)]['sectionGroup'].getZIndex()){
             this.groups['group' + (section - 1)]['sectionGroup'].moveUp()
         }
+
+        this.sectionGroupPosition(this.getSectionsCount(), this.width+changedGlobalWidth)
+
         this.layer.draw()
 
 
@@ -849,12 +1037,13 @@ let furniture = {
         }
         return sections
     },
-    sectionGroupPosition(children){
+    sectionGroupPosition(children, furniture_width = this.width){
         if(children.length){
-            let count = children.length,
-                interval = (this.width - 40)/count,
+            let count = children.length+1,
+                interval = (furniture_width)/count,
                 i=1,
                 isLast = false
+
             for(let y = 0; y <= children.length; y++){
                 if(y==children.length){
                     isLast = true
@@ -866,11 +1055,11 @@ let furniture = {
                         if(attrs.hasOwnProperty('x')){
                             oldX = attrs['x']
                         }
-                        attrs.points[0] = (interval*i + 90 - interval/2) - oldX
-                        attrs.points[2] = (interval*i + 40 + 90 - interval/2) - oldX
-                        attrs.points[4] = (interval*i + 40 + 90 - interval/2) - oldX
-                        attrs.points[6] = (interval*i + 90 - interval/2) - oldX
-                        attrs.points[8] = (interval*i + 90 - interval/2) - oldX
+                        attrs.points[0] = (interval*i + this.limitation.left) - oldX
+                        attrs.points[2] = (interval*i + this.limitation.left + 40) - oldX
+                        attrs.points[4] = (interval*i + this.limitation.left + 40) - oldX
+                        attrs.points[6] = (interval*i + this.limitation.left) - oldX
+                        attrs.points[8] = (interval*i + this.limitation.left) - oldX
                         i++
 
                         if(this.layer.find('.shelves'+y).length && this.layer.find('.shelves'+y).hasOwnProperty(0)){
@@ -1203,8 +1392,8 @@ let furniture = {
         let doorWidth = 126,
             doorCount,
             doorRealWidth,
-            width = this.width,
-            height = this.height,
+            width = this.current_width ? this.current_width : this.width,
+            height = this.limitation.bottom - this.limitation.top,
             x1 = this.limitation.left,
             y1 = this.limitation.bottom;
         doorCount = count
@@ -1265,7 +1454,39 @@ let furniture = {
             this.groups['doorsGroup'].add(door)
         }
         this.groups['doorsGroup'].moveToTop()
+        this.groups['visorGroup'].moveToTop()
         this.groups['doorsGroup'].show()
+        this.layer.draw()
+    },
+
+    createVisor(){
+        let x1 = this.firstPoint.x,
+            y1 = this.firstPoint.y,
+            width = window.furniture_calc.width ? window.furniture_calc.width : this.width,
+            visor = new Konva.Line({
+            points: [
+                x1, y1,
+                x1-20, y1+23 ,
+                x1+width-20, y1+23,
+                x1+width, y1,
+                x1, y1
+            ],
+            fill: 'white',
+            stroke: this.strokeColor,
+            strokeWidth: 1,
+            closed : true,
+            name: 'visorSection'
+        })
+
+        this.groups['visorGroup'].add(visor)
+        this.groups['visorGroup'].moveToTop()
+
+        this.layer.add(this.groups['visorGroup'])
+        this.layer.draw()
+    },
+
+    hideVisor(){
+        this.groups['visorGroup'].removeChildren()
         this.layer.draw()
     },
 
@@ -1686,6 +1907,6 @@ let furniture = {
 
         window.myLayers = this.layer;
     }
-};
+}
 
 export {furniture}

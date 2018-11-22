@@ -1,4 +1,5 @@
-import VueKonva from "vue-konva";
+import VueKonva from "vue-konva"
+import Vue from 'vue'
 import {furniture} from './js/index.js'
 
 
@@ -65,6 +66,7 @@ document.body.addEventListener('click', function(e){
 });
 
 let consoles = document.body.querySelector('.consoles'),
+    visor = document.body.querySelector('.visor'),
     sectionsAmount = document.body.querySelector('.amount-wrap.sections'),
     doorsAmount = document.body.querySelector('.amount-wrap.doors'),
     doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
@@ -89,6 +91,17 @@ consoles.onchange = function(obj){
     else{
         furniture.hideRightSideConsole()
         furniture.hideLeftSideConsole()
+    }
+}
+
+visor.onchange = function(obj){
+    let val = this.options[this.selectedIndex].value
+
+    if(val == 'show'){
+        furniture.createVisor()
+    }
+    else{
+        furniture.hideVisor()
     }
 }
 
