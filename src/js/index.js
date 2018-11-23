@@ -119,6 +119,7 @@ let furniture = {
             y1 = this.firstPoint.y,
             width = this.width,
             height = this.height,
+            limits = this.limitation,
             polyRight = new Konva.Line({
             points: [x1+width, y1, x1+width+40,y1-43, x1+width+40, y1-43+height, x1+width, y1+height, x1+width, y1],
             fill: 'white',
@@ -131,12 +132,9 @@ let furniture = {
             startPoint
 
         polyRight.attrs.dragBoundFunc = (pos) => {
-            let minX = this.limitation.left,
-                maxX = this.limitation.right,
-                newX,
+            let newX,
                 maxWidth = window.furniture_calc.max_width ? window.furniture_calc.max_width : 500,
                 minWidth = window.furniture_calc.min_width ? window.furniture_calc.min_width : 150,
-                changedX = polyRight.attrs.x ? polyRight.attrs.x : 0,
                 topSection = this.layer.find('.topSection'),
                 botSection = this.layer.find('.botSection')
 
@@ -155,7 +153,7 @@ let furniture = {
             }
         }
 
-        this.limitation['right'] = polyRight.attrs.points[0];
+        limits['right'] = polyRight.attrs.points[0];
         this.layer.add(polyRight);
         polyRight.setZIndex(50);
         polyRight.on('dragmove',()=>{
@@ -164,6 +162,10 @@ let furniture = {
                 topSection = this.layer.find('.topSection'),
                 botSection = this.layer.find('.botSection'),
                 visor = this.layer.find('.visor'),
+                rightConsole = this.layer.find('.rightConsoleGroup'),
+                rightConsoleShelves = this.layer.find('.rightConsoleShelves'),
+                leftConsole = this.layer.find('.leftConsoleGroup'),
+                leftConsoleShelves = this.layer.find('.leftConsoleShelves'),
                 doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
                 isChecked = doorsCheckbox.checked,
                 doorsAmount = document.body.querySelector('.amount-wrap.doors'),
@@ -176,6 +178,25 @@ let furniture = {
             topSection[0]['attrs']['points'][6] = startPoint + changedX
             botSection[0]['attrs']['points'][4] = startPoint + 40 + changedX
             botSection[0]['attrs']['points'][6] = startPoint + changedX
+
+            watchers.createButtons(this.groups, limits.right-limits.left, limits.bottom-limits.top, limits)
+
+            if(rightConsole[0]['children']['length']){
+                rightConsole.x(changedX)
+                if(rightConsoleShelves.length){
+                    this.shelfGroupPosition(rightConsoleShelves[0]['children'], '', height, 'rightConsoleShelves')
+                }
+                watchers.hideConsoleButton('right')
+                watchers.createConsoleButton(rightConsole, limits.right-limits.left, limits.bottom-limits.top, limits,'right')
+            }
+            if(leftConsole[0]['children']['length']){
+                if(leftConsoleShelves.length){
+                    this.shelfGroupPosition(leftConsoleShelves[0]['children'], '', height, 'leftConsoleShelves')
+                }
+                watchers.hideConsoleButton('left')
+                watchers.createConsoleButton(leftConsole, limits.right-limits.left, limits.bottom-limits.top, limits,'left')
+            }
+
             if(visor[0]['children']['length']){
                 visor[0]['children'][0]['attrs']['points'][4] = startPoint - 20 + changedX
                 visor[0]['children'][0]['attrs']['points'][6] = startPoint + changedX
@@ -196,13 +217,16 @@ let furniture = {
             this.layer.draw()
         })
         polyRight.on('dragend', function(){
-            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap'),
+                doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
+                isChecked = doorsCheckbox.checked
             for(let i=0; i<materialsData.length; i++){
                 let key = materialsData[i].getAttribute('data-key'),
                     val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
                     src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
-
-                furniture.setDoorImage(val, parseInt(key), src)
+                if(isChecked){
+                    furniture.setDoorImage(val, parseInt(key), src)
+                }
             }
         })
         polyRight.on('mouseover', ()=>{
@@ -285,18 +309,45 @@ let furniture = {
                 leftSection = this.layer.find('.leftSection'),
                 rightSection = this.layer.find('.rightSection'),
                 allSections = this.layer.find('.section1'),
+                rightConsole = this.layer.find('.rightConsoleGroup'),
+                rightConsoleShelves = this.layer.find('.rightConsoleShelves'),
+                leftConsole = this.layer.find('.leftConsoleGroup'),
+                leftConsoleShelves = this.layer.find('.leftConsoleShelves'),
+                consoleBack = this.layer.find('.consoleBack'),
+                consoleBot = this.layer.find('.consoleBot'),
                 visor = this.layer.find('.visor'),
                 doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
                 isChecked = doorsCheckbox.checked,
                 doorsAmount = document.body.querySelector('.amount-wrap.doors'),
                 input = doorsAmount.querySelector('input'),
                 furnitureHeightInput = document.getElementById('furniture_height'),
-                sections = this.groups
+                sections = this.groups,
+                limits = this.limitation
 
-            startPoint = startPoint ? startPoint : this.limitation.bottom
+            startPoint = startPoint ? startPoint : limits.bottom
 
             leftSection[0]['attrs']['points'][5] = rightSection[0]['attrs']['points'][5] = startPoint + changedY - 40
             leftSection[0]['attrs']['points'][7] = rightSection[0]['attrs']['points'][7] = startPoint + changedY
+
+            watchers.createButtons(this.groups, limits.right-limits.left, limits.bottom-limits.top, limits)
+
+            if(consoleBack && consoleBack.length){
+                for(let i = 0; i<consoleBack.length; i++){
+                    if(consoleBack[i].hasOwnProperty('attrs')){
+                        let points = consoleBack[i]['attrs']['points']
+                        points[5] = points[7] = limits.bottom - this.bevelDegreeY
+                    }
+                }
+            }
+            if(consoleBot && consoleBot.length){
+                for(let i = 0; i<consoleBot.length; i++){
+                    if(consoleBot[i].hasOwnProperty('attrs')){
+                        let points = consoleBot[i]['attrs']['points']
+                        points[1] = points[7] = points[9] = limits.bottom
+                        points[3] = points[5] = limits.bottom - this.bevelDegreeY
+                    }
+                }
+            }
 
             for(let key in allSections){
                 if(allSections.hasOwnProperty(key)){
@@ -306,6 +357,20 @@ let furniture = {
                         child['attrs']['points'][7] = startPoint + changedY
                     }
                 }
+            }
+            if(rightConsole[0]['children']['length']){
+                if(rightConsoleShelves.length){
+                    this.shelfGroupPosition(rightConsoleShelves[0]['children'], '', height + changedY, 'rightConsoleShelves')
+                }
+                watchers.hideConsoleButton('right')
+                watchers.createConsoleButton(rightConsole, limits.right-limits.left, limits.bottom-limits.top, limits,'right')
+            }
+            if(leftConsole[0]['children']['length']){
+                if(leftConsoleShelves.length){
+                    this.shelfGroupPosition(leftConsoleShelves[0]['children'], '', height + changedY, 'leftConsoleShelves')
+                }
+                watchers.hideConsoleButton('left')
+                watchers.createConsoleButton(leftConsole, limits.right-limits.left, limits.bottom-limits.top, limits,'left')
             }
 
             this.limitation['bottom'] = polyBot.attrs.points[1] + changedY
@@ -331,14 +396,38 @@ let furniture = {
             this.layer.draw()
         })
 
-        polyBot.on('dragend', function(){
-            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap')
+        polyBot.on('dragend', ()=>{
+            let materialsData = document.body.querySelectorAll('.doors-options-column.column .body .option-wrap'),
+                doorsCheckbox =  document.body.querySelector('.doors-checkbox input'),
+                isChecked = doorsCheckbox.checked,
+                consoleBack = this.layer.find('.consoleBack'),
+                consoleBot = this.layer.find('.consoleBot'),
+                limits = this.limitation
             for(let i=0; i<materialsData.length; i++){
                 let key = materialsData[i].getAttribute('data-key'),
                     val = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].value,
                     src = materialsData[i].querySelector('select').options[materialsData[i].querySelector('select').selectedIndex].getAttribute('data-src')
 
-                furniture.setDoorImage(val, parseInt(key), src)
+                if(isChecked){
+                    furniture.setDoorImage(val, parseInt(key), src)
+                }
+            }
+            if(consoleBack && consoleBack.length){
+                for(let i = 0; i<consoleBack.length; i++){
+                    if(consoleBack[i].hasOwnProperty('attrs')){
+                        let points = consoleBack[i]['attrs']['points']
+                        points[5] = points[7] = limits.bottom - this.bevelDegreeY
+                    }
+                }
+            }
+            if(consoleBot && consoleBot.length){
+                for(let i = 0; i<consoleBot.length; i++){
+                    if(consoleBot[i].hasOwnProperty('attrs')){
+                        let points = consoleBot[i]['attrs']['points']
+                        points[1] = points[7] = points[9] = limits.bottom
+                        points[3] = points[5] = limits.bottom - this.bevelDegreeY
+                    }
+                }
             }
         })
 
@@ -492,22 +581,26 @@ let furniture = {
                         oldY = attrs['y'];
                     }
                     if(attrs && attrs.hasOwnProperty('name') && attrs.name == 'shelf'){
-                        attrs.points[1] = interval*i + 90 - interval/2 - oldY;
-                        attrs.points[3] = interval*i - 43 + 90 - interval/2 - oldY;
-                        attrs.points[5] = interval*i - 43 + 90 - interval/2 - oldY;
-                        attrs.points[7] = interval*i + 90 - interval/2 - oldY;
-                        attrs.points[9] = interval*i + 90 - interval/2 - oldY;
-                        i++;
+                        attrs.points[1] = interval*i + 90 - interval/2 - oldY
+                        attrs.points[3] = interval*i - 43 + 90 - interval/2 - oldY
+                        attrs.points[5] = interval*i - 43 + 90 - interval/2 - oldY
+                        attrs.points[7] = interval*i + 90 - interval/2 - oldY
+                        attrs.points[9] = interval*i + 90 - interval/2 - oldY
+                        i++
                         attrs.dragBoundFunc = (pos) => {
-                            let minY = this.limitation.top;
-                            let maxY = minY+height;
-                            let newY;
-                            let isFirst = !children.hasOwnProperty(y+1);
-                            let isLast = !children.hasOwnProperty(y-1);
-                            let newChildren
+                            let minY = this.limitation.top,
+                                maxY = minY+height,
+                                newY,
+                                isFirst = !children.hasOwnProperty(y+1),
+                                isLast = !children.hasOwnProperty(y-1),
+                                newChildren,
+                                leftLimitDiff = 0
 
                             if(isConsole){
                                 newChildren = this.layer.find('.'+isConsole)[0]['children']
+                                if(isConsole == 'rightConsoleShelves'){
+                                    leftLimitDiff = (this.limitation.left + this.width) - this.limitation.right
+                                }
                             }else{
                                 newChildren = this.layer.find('.shelves'+section)[0]['children']
                             }
@@ -524,24 +617,24 @@ let furniture = {
                                 if(pos.y < (attrs.points[1] - minY - 20)*-1){
                                     newY = (attrs.points[1] - minY - 20)*-1;
                                 }else if (pos.y > (nextShelf + changeY)){
-                                    newY = (nextShelf + changeY);
+                                    newY = (nextShelf + changeY)
                                 }else{
                                     newY = pos.y;
                                 }
                                 return {
-                                    x: 0,
+                                    x: -leftLimitDiff,
                                     y: newY
                                 }
                             }else if (isLast){
                                 if(pos.y < ((attrs.points[1] - newChildren[y+1]['attrs']['points'][1] - 20 - (newChildren[y+1]['changedY'] ? newChildren[y+1]['changedY'] : 0)) *-1)){
                                     newY = (attrs.points[1] - newChildren[y+1]['attrs']['points'][1] - 20 - (newChildren[y+1]['changedY'] ? newChildren[y+1]['changedY'] : 0))*-1;
                                 }else if (pos.y > (maxY-attrs.points[1]) - 20 ){
-                                    newY = (maxY-attrs.points[1]) - 20;
+                                    newY = (maxY-attrs.points[1]) - 20
                                 }else{
-                                    newY = pos.y;
+                                    newY = pos.y
                                 }
                                 return {
-                                    x: 0,
+                                    x: -leftLimitDiff,
                                     y: newY
                                 }
                             }else{
@@ -553,11 +646,11 @@ let furniture = {
                                     newY = pos.y;
                                 }
                                 return {
-                                    x: 0,
+                                    x: -leftLimitDiff,
                                     y: newY
                                 }
                             }
-                        };
+                        }
 
                         children[y].on('dragend', (e) => {
                             let pos = this.stage.getPointerPosition();
@@ -567,7 +660,7 @@ let furniture = {
                                 children[y]['changedY'] = e.target.attrs.y;
                                 this.layer.draw();
                             }
-                        });
+                        })
 
                     }
                 }
@@ -1499,15 +1592,18 @@ let furniture = {
         if(this.groups['rightConsoleGroup']['children']['length']){
             this.groups['rightConsoleGroup'].show()
             this.layer.draw()
-            let consoleElement = this.layer.find('.rightConsoleShelves')
-            watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'right')
+            let consoleElement = this.layer.find('.rightConsoleShelves'),
+                limits = this.limitation
+            watchers.createConsoleButton(consoleElement, limits.right-limits.left, limits.bottom-limits.top, limits,'right')
             return
         }
-        let height = this.height,
-            x1 = this.limitation.right,
-            y1 = this.limitation.top,
+        let limits = this.limitation,
+            height = limits.bottom - limits.top,
+            x1 = limits.left+ this.width,
+            y1 = limits.top,
             bevelX = this.bevelDegreeX,
-            bevelY = this.bevelDegreeY
+            bevelY = this.bevelDegreeY,
+            leftLimitDiff = (limits.left + this.width) - limits.right
 
         let consoleTop = new Konva.Line({
             points: [
@@ -1558,17 +1654,18 @@ let furniture = {
         })
 
         this.groups['rightConsoleGroup'].add(consoleBack,consoleBot ,consoleTop)
+        this.groups['rightConsoleGroup'].x(-leftLimitDiff)
         this.groups['rightConsoleGroup'].moveToTop()
         this.groups['rightConsoleGroup'].show()
         this.layer.draw()
-
         let consoleElement = this.layer.find('.rightConsoleShelves')
-        watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'right', removeButtons)
+        watchers.createConsoleButton(consoleElement, limits.right-limits.left, limits.bottom-limits.top, limits,'right', removeButtons)
     },
 
     addRightConsoleShelf(consoleWidth = 60){
-        let height = this.height,
-            x1 = this.limitation.right,
+        let height = this.limitation.bottom - this.limitation.top,
+            leftLimitDiff = (this.limitation.left + this.width) - this.limitation.right,
+            x1 = this.limitation.right + leftLimitDiff,
             y1 = this.limitation.top + height/2,
             bevelX = this.bevelDegreeX,
             bevelY = this.bevelDegreeY,
@@ -1639,12 +1736,14 @@ let furniture = {
         if(this.groups['leftConsoleGroup']['children']['length']){
             this.groups['leftConsoleGroup'].show()
             this.layer.draw()
-            let consoleElement = this.layer.find('.leftConsoleShelves')
-            watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'left')
+            let consoleElement = this.layer.find('.leftConsoleShelves'),
+                limits = this.limitation
+            watchers.createConsoleButton(consoleElement, limits.right-limits.left, limits.bottom-limits.top, limits,'left')
             return
         }
 
-        let height = this.height,
+        let limits = this.limitation,
+            height = limits.bottom - limits.top,
             x1 = this.limitation.left,
             y1 = this.limitation.top,
             bevelX = this.bevelDegreeX,
@@ -1704,11 +1803,11 @@ let furniture = {
         this.layer.draw()
 
         let consoleElement = this.layer.find('.leftConsoleShelves')
-        watchers.createConsoleButton(consoleElement, this.width, this.height, this.limitation,'left', removeButtons)
+        watchers.createConsoleButton(consoleElement, limits.right-limits.left, limits.bottom-limits.top, limits,'left', removeButtons)
     },
 
     addLeftConsoleShelf(consoleWidth = -60){
-        let height = this.height,
+        let height = this.limitation.bottom - this.limitation.top,
             x1 = this.limitation.left,
             y1 = this.limitation.top + height/2,
             bevelX = this.bevelDegreeX,
@@ -1825,7 +1924,7 @@ let furniture = {
         sectionGroup.removeChildren()
         this.groups['count'] -= 1
         this.sectionGroupPosition(this.getSectionsCount())
-        watchers.createButtons(this.groups, this.width, this.height, this.limitation)
+        watchers.createButtons(this.groups, this.limitation.right-this.limitation.left, this.limitation.bottom-this.limitation.top, this.limitation)
         this.layer.draw()
         //watchers.watchSectionsCount(this.groups['count'])
     },
@@ -1877,7 +1976,7 @@ let furniture = {
     },
 
     createButton(){
-        watchers.createButtons(this.groups, this.width, this.height, this.limitation);
+        watchers.createButtons(this.groups, this.limitation.right-this.limitation.left, this.limitation.bottom-this.limitation.top, this.limitation);
     },
 
     createLayer() {
